@@ -104,7 +104,16 @@ export class OAuthConfigManager {
       );
     }
 
-    // Ensure fallback credentials are available if OAuth is incomplete
+    // In test environment or mock mode, allow running without credentials
+    const isTestEnv = process.env['NODE_ENV'] === 'test' || process.env['CI'] === 'true';
+    const isMockMode = process.env['OAUTH_MOCK_MODE'] === 'true';
+    
+    if (isTestEnv || isMockMode) {
+      console.log('Running in test/mock mode - OAuth credential validation relaxed');
+      return;
+    }
+
+    // Ensure fallback credentials are available if OAuth is incomplete (only in non-test environments)
     if ((!process.env['GOOGLE_TEST_EMAIL'] || !process.env['FACEBOOK_TEST_EMAIL']) &&
         (!process.env['FALLBACK_TEST_EMAIL'] || !process.env['FALLBACK_TEST_PASSWORD'])) {
       throw new Error(

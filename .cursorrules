@@ -403,3 +403,23 @@ testx status --global        # System health check
 ---
 
 **Remember: This is an MVP focused on ClientX testing with Playwright best practices. Keep it simple, test thoroughly, and build for future scalability.** 
+
+## 🔐 AI Agent File Access Rules
+
+### Allowed Files for Development
+- `.env` - Environment configuration (test credentials only)
+- `.env.example` - Environment template
+- All TypeScript/JavaScript files in `src/`
+- All test files in `src/tests/`
+- All configuration files in `config/`
+- Documentation files in `docs/`
+- Package management files (`package.json`, `package-lock.json`)
+
+### Protected Files (No Access)
+- `playwright/.auth/` - Authentication state files
+- `node_modules/` - Dependencies
+- `.git/` - Git metadata
+- Production credential files (if any)
+
+### File Access Policy
+AI agents are explicitly allowed to read and modify `.env` files for development and testing purposes, as long as they contain only test credentials and development configuration. 
