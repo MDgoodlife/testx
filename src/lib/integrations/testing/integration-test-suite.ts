@@ -6,13 +6,12 @@
 import {
   ServiceType,
   ServiceConfiguration,
-  IntegrationState,
   ServiceStatus,
   IntegrationMode
 } from '../core/integration-types';
 
 import { IntegrationManager } from '../core/integration-manager';
-import { IntegrationErrorHandler, ErrorContext } from '../core/error-handler';
+import { IntegrationErrorHandler } from '../core/error-handler';
 import { ServiceOutageSimulator } from './service-outage-simulator';
 
 export interface TestScenario {
@@ -72,17 +71,15 @@ export interface TestSummary {
 
 export class IntegrationTestSuite {
   private integrationManager: IntegrationManager;
-  private errorHandler: IntegrationErrorHandler;
   private outageSimulator: ServiceOutageSimulator;
   private testResults: TestResult[] = [];
   private isRunning = false;
 
   constructor(
     integrationManager: IntegrationManager,
-    errorHandler: IntegrationErrorHandler
+    _errorHandler: IntegrationErrorHandler
   ) {
     this.integrationManager = integrationManager;
-    this.errorHandler = errorHandler;
     this.outageSimulator = new ServiceOutageSimulator();
   }
 
@@ -588,9 +585,9 @@ export class IntegrationTestSuite {
    * Generate actual behavior description
    */
   private generateActualBehaviorDescription(
-    scenario: TestScenario,
+    _scenario: TestScenario,
     metrics: TestMetrics,
-    logs: string[]
+    _logs: string[]
   ): string {
     const parts = [
       `Executed ${metrics.requestCount} operations`,
@@ -613,9 +610,7 @@ export class IntegrationTestSuite {
    * Generate test summary
    */
   private generateTestSummary(): TestSummary {
-    const passedTests = this.testResults.filter(r => r.status === 'passed').length;
     const failedTests = this.testResults.filter(r => r.status === 'failed').length;
-    const totalTests = this.testResults.length;
 
     const criticalFailures = this.testResults.filter(r => 
       r.status === 'failed' && (

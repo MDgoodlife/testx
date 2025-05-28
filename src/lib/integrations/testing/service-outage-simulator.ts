@@ -222,7 +222,7 @@ export class ServiceOutageSimulator {
         const simulation = this.activeSimulations.get(affectedService);
         
         if (simulation && simulation.active) {
-          return this.simulateFailureResponse(simulation, url);
+          return this.simulateFailureResponse(simulation);
         }
       }
 
@@ -253,7 +253,7 @@ export class ServiceOutageSimulator {
   /**
    * Simulate failure response based on simulation type
    */
-  private async simulateFailureResponse(simulation: OutageSimulation, url: string): Promise<Response> {
+  private async simulateFailureResponse(simulation: OutageSimulation): Promise<Response> {
     switch (simulation.type) {
       case 'outage':
         // Simulate complete service unavailability
@@ -314,76 +314,6 @@ export class ServiceOutageSimulator {
    */
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * Generate realistic error responses for different services
-   */
-  private generateServiceSpecificError(service: ServiceType, type: string): any {
-    switch (service) {
-      case ServiceType.SLACK:
-        if (type === 'auth_failure') {
-          return { ok: false, error: 'invalid_auth' };
-        }
-        if (type === 'rate_limit') {
-          return { ok: false, error: 'rate_limited' };
-        }
-        return { ok: false, error: 'slack_error' };
-
-      case ServiceType.NOTION:
-        if (type === 'auth_failure') {
-          return { 
-            object: 'error', 
-            status: 401, 
-            code: 'unauthorized',
-            message: 'API token is invalid.' 
-          };
-        }
-        if (type === 'rate_limit') {
-          return { 
-            object: 'error', 
-            status: 429, 
-            code: 'rate_limited',
-            message: 'Rate limited. Please wait before making more requests.' 
-          };
-        }
-        return { 
-          object: 'error', 
-          status: 500, 
-          code: 'internal_server_error',
-          message: 'Internal server error.' 
-        };
-
-      case ServiceType.GITHUB:
-        if (type === 'auth_failure') {
-          return { 
-            message: 'Bad credentials',
-            documentation_url: 'https://docs.github.com/rest' 
-          };
-        }
-        if (type === 'rate_limit') {
-          return { 
-            message: 'API rate limit exceeded',
-            documentation_url: 'https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting' 
-          };
-        }
-        return { 
-          message: 'Server Error',
-          documentation_url: 'https://docs.github.com/rest' 
-        };
-
-      case ServiceType.ANYKROWD:
-        if (type === 'auth_failure') {
-          return { error: 'Authentication failed', code: 'AUTH_FAILED' };
-        }
-        if (type === 'rate_limit') {
-          return { error: 'Rate limit exceeded', code: 'RATE_LIMITED' };
-        }
-        return { error: 'Service unavailable', code: 'SERVICE_ERROR' };
-
-      default:
-        return { error: 'Unknown service error' };
-    }
   }
 
   /**

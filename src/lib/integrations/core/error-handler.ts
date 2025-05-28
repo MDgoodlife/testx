@@ -6,8 +6,6 @@
 import {
   ServiceType,
   IntegrationError,
-  ServiceStatus,
-  IntegrationEvent,
   ServiceConfiguration
 } from './integration-types';
 

@@ -7,9 +7,7 @@ import {
   ServiceType,
   ServiceConfiguration,
   IntegrationState,
-  ServiceStatus,
-  IntegrationMode,
-  IntegrationEvent
+  IntegrationMode
 } from './integration-types';
 
 export interface RollbackPoint {
@@ -211,7 +209,6 @@ export class RollbackManager {
       execution.status = 'failed';
       execution.errors.push(`Rollback execution failed: ${errorMessage}`);
       
-      const result = this.generateRollbackResult(execution);
       this.addToHistory(execution);
       
       throw new Error(`Rollback failed for ${plan.service}: ${errorMessage}`);
@@ -242,7 +239,7 @@ export class RollbackManager {
   /**
    * Perform the actual step action
    */
-  private async performStepAction(step: RollbackStep, execution: RollbackExecution): Promise<void> {
+  private async performStepAction(step: RollbackStep, _execution: RollbackExecution): Promise<void> {
     switch (step.action) {
       case 'disable_service':
         await this.disableService(step.target, step.parameters);
@@ -276,7 +273,7 @@ export class RollbackManager {
   /**
    * Disable a service
    */
-  private async disableService(service: ServiceType, parameters: Record<string, any>): Promise<void> {
+  private async disableService(service: ServiceType, _parameters: Record<string, any>): Promise<void> {
     console.log(`[Rollback Manager] Disabling service ${service}`);
     
     // Implementation would disable the service
@@ -309,7 +306,7 @@ export class RollbackManager {
   /**
    * Clear service cache
    */
-  private async clearServiceCache(service: ServiceType, parameters: Record<string, any>): Promise<void> {
+  private async clearServiceCache(service: ServiceType, _parameters: Record<string, any>): Promise<void> {
     console.log(`[Rollback Manager] Clearing cache for ${service}`);
     
     // Implementation would clear service-specific cache
@@ -321,7 +318,7 @@ export class RollbackManager {
   /**
    * Reset service authentication
    */
-  private async resetAuthentication(service: ServiceType, parameters: Record<string, any>): Promise<void> {
+  private async resetAuthentication(service: ServiceType, _parameters: Record<string, any>): Promise<void> {
     console.log(`[Rollback Manager] Resetting authentication for ${service}`);
     
     // Implementation would reset auth tokens/credentials
@@ -333,7 +330,7 @@ export class RollbackManager {
   /**
    * Notify users about rollback
    */
-  private async notifyUsers(service: ServiceType, parameters: Record<string, any>): Promise<void> {
+  private async notifyUsers(service: ServiceType, _parameters: Record<string, any>): Promise<void> {
     console.log(`[Rollback Manager] Notifying users about ${service} rollback`);
     
     // Implementation would send notifications
@@ -345,7 +342,7 @@ export class RollbackManager {
   /**
    * Execute custom rollback action
    */
-  private async executeCustomAction(service: ServiceType, parameters: Record<string, any>): Promise<void> {
+  private async executeCustomAction(service: ServiceType, _parameters: Record<string, any>): Promise<void> {
     console.log(`[Rollback Manager] Executing custom action for ${service}`);
     
     // Implementation would execute custom rollback logic
