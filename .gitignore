@@ -131,4 +131,4 @@ slack-credentials.json
 
 # Backup files
 *.backup
-*.bak 
+*.bak BMAD/

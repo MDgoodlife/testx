@@ -11,9 +11,9 @@ dotenv.config();
 export default defineConfig({
   testDir: './src/tests',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 3,
+  forbidOnly: !!process.env['CI'],
+  retries: process.env['CI'] ? 2 : 0,
+  workers: process.env['CI'] ? 1 : 3,
   
   // AI-Friendly Error Reporting
   reporter: [
@@ -25,7 +25,7 @@ export default defineConfig({
   
   use: {
     // Base URL from environment or default to krowd-dev
-    baseURL: process.env.ANYKROWD_BASE_URL || 'https://krowd-dev.anykrowd.dev',
+    baseURL: process.env['ANYKROWD_BASE_URL'] || 'https://krowd-dev.anykrowd.dev',
     
     // Enhanced debugging and error capture
     trace: 'on-first-retry',
@@ -149,7 +149,6 @@ export default defineConfig({
     timeout: 10000,
     toHaveScreenshot: {
       // Screenshot comparison settings
-      mode: 'strict',
       threshold: 0.2,
     },
   },
