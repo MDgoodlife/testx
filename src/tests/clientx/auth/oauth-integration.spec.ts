@@ -221,7 +221,7 @@ test.describe('OAuth Integration Tests', () => {
 
   test.describe('Security and Compliance', () => {
     test('should not expose sensitive credentials in logs', async () => {
-      const config = configManager.getConfig();
+      const config = configManager.getSanitizedConfig();
       
       // Verify that sensitive data is not exposed
       expect(JSON.stringify(config)).not.toContain('password');

@@ -127,6 +127,18 @@ export class OAuthConfigManager {
     return { ...this.config };
   }
 
+  public getSanitizedConfig(): Omit<OAuthConfig, 'fallback'> & { fallback: { enabled: boolean; email: string } } {
+    const config = { ...this.config };
+    return {
+      ...config,
+      fallback: {
+        enabled: config.fallback.enabled,
+        email: config.fallback.email,
+        // password intentionally omitted for security
+      },
+    };
+  }
+
   public getProvider(name: 'google' | 'facebook'): OAuthProvider {
     return { ...this.config.providers[name] };
   }

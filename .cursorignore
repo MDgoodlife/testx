@@ -1,0 +1,98 @@
+# TestX MVP - Cursor AI Agent File Access Configuration
+# This file controls which files Cursor AI agents can access
+# Following security best practices while enabling development workflow
+
+# =============================================================================
+# BLOCK SENSITIVE FILES (Default Security)
+# =============================================================================
+
+# Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# SSH keys
+id_rsa
+id_ed25519
+*.pub
+
+# Database credentials
+database.yml
+database.json
+
+# Production secrets
+**/secrets/*
+**/private/*
+production-*.env
+prod-*.env
+
+# Service account files
+service-account*.json
+gcp-*.json
+aws-credentials*
+
+# Authentication state files (Playwright)
+playwright/.auth/*.json
+
+# =============================================================================
+# ALLOW DEVELOPMENT FILES (Explicit Overrides)
+# =============================================================================
+
+# Environment files for development and testing
+!.env
+!.env.example
+!.env.development
+!.env.test
+!.env.local
+
+# Configuration files
+!.cursorrules
+!.cursorignore
+
+# Package management
+!package.json
+!package-lock.json
+!yarn.lock
+
+# TypeScript and build configs
+!tsconfig.json
+!jest.config.js
+!playwright.config.ts
+!.eslintrc.js
+
+# Documentation and guides
+!README.md
+!docs/**
+!release-notes/**
+
+# Source code (all TypeScript/JavaScript)
+!src/**/*.ts
+!src/**/*.js
+!src/**/*.tsx
+!src/**/*.jsx
+
+# Test files
+!**/*.test.ts
+!**/*.spec.ts
+
+# =============================================================================
+# SECURITY NOTES
+# =============================================================================
+# 
+# This configuration allows AI agents to:
+# 1. Read/write .env files for development setup
+# 2. Access all source code and configuration files
+# 3. Modify test files and documentation
+#
+# While blocking access to:
+# 1. Production credentials and secrets
+# 2. Private keys and certificates
+# 3. Authentication state files
+# 4. Service account credentials
+#
+# The .env file should only contain development/test credentials
+# that can be safely rotated if compromised.
+# ============================================================================= 
