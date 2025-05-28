@@ -4,7 +4,7 @@
   "description": "Professional browser testing framework for anyKrowd ClientX with integrated collaboration tools",
   "main": "dist/cli/index.js",
   "bin": {
-    "testx": "dist/cli/index.js"
+    "testx": "dist/src/cli/index.js"
   },
   "scripts": {
     "build": "tsc",
