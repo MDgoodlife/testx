@@ -11,8 +11,8 @@
  * - Generate release notes and manage dev→main promotion
  */
 
+import 'dotenv/config';
 import { Octokit } from '@octokit/rest';
-import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -133,8 +133,6 @@ class TestXGitHubSteward implements GitHubSteward {
       return false;
     }
 
-    const releaseFiles = fs.readdirSync(releaseNotesDir);
-    
     // Map issues to known completed work
     const completedWork: { [key: number]: boolean } = {
       1: true,  // Epic 0: Foundation & Risk Mitigation - Completed via multiple releases
@@ -154,7 +152,6 @@ class TestXGitHubSteward implements GitHubSteward {
     // Check for related release notes
     const releaseNotesDir = path.join(process.cwd(), 'release-notes');
     if (fs.existsSync(releaseNotesDir)) {
-      const releaseFiles = fs.readdirSync(releaseNotesDir);
       
       // Map issues to release notes
       const issueToRelease: { [key: number]: string[] } = {

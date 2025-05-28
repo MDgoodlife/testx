@@ -5,6 +5,7 @@ import { RunCommand } from '../commands/run.command';
 import { SetupCommand } from '../commands/setup.command';
 import { StatusCommand } from '../commands/status.command';
 import { CreateCommand } from '../commands/create.command';
+import { HelpCommand } from '../commands/help.command';
 
 export class CLIParser {
   private program: Command;
@@ -51,6 +52,10 @@ export class CLIParser {
   }
 
   private registerCommands(): void {
+    // Create command - Generate test scenarios (enhanced with interactive mode)
+    const createCommand = new CreateCommand(this.logger);
+    this.program.addCommand(createCommand.getCommand());
+
     // Run command - Execute tests
     const runCommand = new RunCommand(this.logger);
     this.program.addCommand(runCommand.getCommand());
@@ -63,9 +68,9 @@ export class CLIParser {
     const statusCommand = new StatusCommand(this.logger);
     this.program.addCommand(statusCommand.getCommand());
 
-    // Create command - Generate test scenarios
-    const createCommand = new CreateCommand(this.logger);
-    this.program.addCommand(createCommand.getCommand());
+    // Help command - Enhanced help and discovery
+    const helpCommand = new HelpCommand(this.logger);
+    this.program.addCommand(helpCommand.getCommand());
   }
 
   private setupHelpAndErrors(): void {
@@ -99,11 +104,20 @@ export class CLIParser {
     console.log(chalk.bold.blue('🧪 TestX MVP - Professional Browser Testing Framework'));
     console.log(chalk.gray('─'.repeat(60)));
     console.log();
-    console.log('Quick start:');
-    console.log(`  ${chalk.cyan('testx run clientx auth')}     Run ClientX authentication tests`);
-    console.log(`  ${chalk.cyan('testx setup slack')}         Setup Slack integration`);
-    console.log(`  ${chalk.cyan('testx status --global')}     Check system health`);
-    console.log(`  ${chalk.cyan('testx help')}                Show all available commands`);
+    console.log(chalk.bold('🚀 Quick Start:'));
+    console.log(`  ${chalk.green('testx create')}                Start interactive test creation`);
+    console.log(`  ${chalk.cyan('testx status --global')}       Check system health`);
+    console.log(`  ${chalk.yellow('testx help')}                  Show detailed help`);
+    console.log();
+    console.log(chalk.bold('📋 Common Commands:'));
+    console.log(`  ${chalk.cyan('testx create clientx auth')}    Quick auth test creation`);
+    console.log(`  ${chalk.cyan('testx run clientx')}            Run ClientX tests`);
+    console.log(`  ${chalk.cyan('testx help --modules')}         Learn about modules`);
+    console.log();
+    console.log(chalk.bold('🔍 Need Help?'));
+    console.log(`  ${chalk.blue('testx help')}                  General help and examples`);
+    console.log(`  ${chalk.blue('testx help create')}           Test creation help`);
+    console.log(`  ${chalk.blue('testx help --examples')}       Usage examples`);
     console.log();
     console.log(`For more information, visit: ${chalk.blue('https://github.com/MDgoodlife/testx')}`);
     console.log();

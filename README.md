@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![Playwright](https://img.shields.io/badge/Playwright-1.40-green.svg)](https://playwright.dev/)
 
-Professional browser testing framework for anyKrowd ClientX with integrated collaboration tools, CLI interface, and BMAD Method architecture.
+Professional browser testing framework for anyKrowd ClientX with enhanced CLI experience, integrated collaboration tools, and BMAD Method architecture. **Now with professional UX for non-developers!**
 
 ## 🎯 Project Overview
 
@@ -13,6 +13,7 @@ Professional browser testing framework for anyKrowd ClientX with integrated coll
 - **Framework:** Playwright Test with TypeScript
 - **Method:** BMAD (Business, Method, Architecture, Development)
 - **Target:** anyKrowd ClientX core user flows
+- **UX Focus:** Professional experience for both developers and non-developers
 
 ## 🚀 Quick Start
 
@@ -42,23 +43,75 @@ cp .env.example .env
 # Setup integrations
 npm run setup
 
-# Run initial tests
-npm test
+# Verify installation
+testx status --global
 ```
 
-### First Test Run
+### Your First Test (Non-Developer Friendly!)
 ```bash
-# Run ClientX authentication tests
-npm run test:clientx
+# Interactive test creation with step-by-step guidance
+testx create
 
-# Run with browser visible
-npm run test:headed
+# Quick test creation for experienced users
+testx create clientx auth
 
-# Run with Playwright UI
-npm run test:ui
+# See what tests are available
+testx run clientx --list
 
-# View test report
-npm run test:report
+# Run a test with visible browser (recommended for first time)
+testx run clientx auth-flow --headed
+
+# Get help anytime
+testx help
+```
+
+## 🎯 Enhanced CLI Experience
+
+### Professional UX Features
+- **🎨 Visual Feedback:** Clear execution details with colored output
+- **🔍 Smart Discovery:** Automatic test discovery and pattern matching
+- **💡 Helpful Guidance:** Automatic suggestions and tips
+- **🚀 Browser Visibility:** Easy `--headed` mode for visual testing
+- **📋 Comprehensive Help:** Module-specific guidance and examples
+
+### Interactive Test Creation
+```bash
+testx create
+# ✨ Step-by-step guided experience:
+# 1. Choose module (ClientX, StaffX, AdminX)
+# 2. Select scenario type (auth, wallet, dashboard, etc.)
+# 3. Provide target URL with validation
+# 4. Choose creation method (demonstrate, template, manual)
+```
+
+### Smart Test Execution
+```bash
+# Pattern matching - finds auth-flow-20250528.spec.ts
+testx run clientx auth-flow
+
+# List all available tests
+testx run clientx --list
+
+# Visual browser testing
+testx run clientx auth-flow --headed
+
+# Get execution details and helpful tips
+🎯 Test Execution Details:
+   Module: CLIENTX
+   Target: auth-flow
+   Path: src/tests/clientx/auth-flow-20250528.spec.ts
+   Mode: Headed (browser visible)
+
+🚀 Starting Playwright...
+💡 Tip: Add --headed to see the browser in action
+```
+
+### Comprehensive Help System
+```bash
+testx help                    # General help and quick start
+testx help --modules          # Learn about ClientX, StaffX, AdminX
+testx help --examples         # See usage examples and patterns
+testx help create            # Detailed test creation help
 ```
 
 ## 🏗️ Architecture
@@ -157,7 +210,7 @@ docs(readme): update installation instructions
 ```bash
 npm run dev                   # Start development mode
 npm run build                 # Build TypeScript
-npm run test                  # Run all tests
+npm run test                  # Run all tests (Playwright)
 npm run test:clientx          # Run ClientX tests only
 npm run test:headed           # Run with browser visible
 npm run test:debug            # Run with Playwright inspector
@@ -166,16 +219,34 @@ npm run lint                  # Run linting
 npm run type-check           # TypeScript type checking
 ```
 
-### CLI Commands (Once Implemented)
+### CLI Commands (Working Now!)
 ```bash
-testx run clientx auth        # Run ClientX auth tests
-testx run clientx wallet      # Run ClientX wallet tests
-testx create clientx flow     # Create new test scenario
-testx record clientx --url    # Record browser actions
+# Test Creation (Interactive & Quick)
+testx create                  # Interactive step-by-step guidance
+testx create clientx auth     # Quick auth test creation
+testx create clientx wallet   # Quick wallet test creation
+
+# Test Execution (Enhanced UX)
+testx run clientx auth-flow   # Smart pattern matching
+testx run clientx --list      # List all available tests
+testx run clientx auth --headed # Run with visible browser
+testx run clientx --debug     # Debug mode with inspector
+
+# System Management
+testx status                  # Quick health check
+testx status --global         # Comprehensive system check
 testx setup slack            # Setup Slack integration
 testx setup notion           # Setup Notion integration
-testx status --global        # System health check
-testx analyze last-run       # Analyze last test execution
+
+# Help & Discovery
+testx help                   # General help and quick start
+testx help --modules         # Learn about modules
+testx help --examples        # Usage examples
+testx help create           # Test creation help
+
+# Coming in Phase 2
+testx record clientx --url   # Record browser actions (Phase 2)
+testx analyze last-run       # AI analysis (Phase 2)
 ```
 
 ### Slack Commands

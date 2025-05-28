@@ -75,6 +75,12 @@ export class StatusCommand extends BaseCommand {
     // Check project structure
     results.push(await this.checkProjectStructure());
 
+    // Check CLI installation and version
+    results.push(await this.checkCLIInstallation());
+
+    // Check TypeScript compilation
+    results.push(await this.checkTypeScriptCompilation());
+
     return results;
   }
 
@@ -89,6 +95,9 @@ export class StatusCommand extends BaseCommand {
 
     // Check GitHub integration
     results.push(await this.checkGitHubHealth());
+
+    // Check anyKrowd connectivity
+    results.push(await this.checkAnyKrowdConnectivity());
 
     return results;
   }
@@ -268,7 +277,7 @@ export class StatusCommand extends BaseCommand {
   }
 
   private async checkSlackHealth(): Promise<HealthStatus> {
-    const requiredVars = ['SLACK_BOT_TOKEN', 'SLACK_SIGNING_SECRET', 'SLACK_CHANNEL_ID'];
+    const requiredVars = ['SLACK_BOT_TOKEN', 'SLACK_CHANNEL_ID'];
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
 
     if (missingVars.length === 0) {
@@ -289,7 +298,7 @@ export class StatusCommand extends BaseCommand {
   }
 
   private async checkNotionHealth(): Promise<HealthStatus> {
-    const requiredVars = ['NOTION_API_KEY', 'NOTION_DATABASE_ID'];
+    const requiredVars = ['NOTION_TOKEN', 'NOTION_PAGE_ID'];
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
 
     if (missingVars.length === 0) {
@@ -310,7 +319,7 @@ export class StatusCommand extends BaseCommand {
   }
 
   private async checkGitHubHealth(): Promise<HealthStatus> {
-    const requiredVars = ['GITHUB_TOKEN', 'GITHUB_REPO'];
+    const requiredVars = ['GITHUB_TOKEN', 'GITHUB_REPO', 'GITHUB_OWNER'];
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
 
     if (missingVars.length === 0) {
@@ -354,7 +363,10 @@ export class StatusCommand extends BaseCommand {
     const requiredVars = [
       'ANYKROWD_BASE_URL',
       'ANYKROWD_TENANT',
-      'GOOGLE_TEST_EMAIL'
+      'GOOGLE_TEST_EMAIL',
+      'GITHUB_TOKEN',
+      'NOTION_TOKEN',
+      'SLACK_CHANNEL_ID'
     ];
 
     const missingVars = requiredVars.filter(varName => !process.env[varName]);
@@ -377,13 +389,39 @@ export class StatusCommand extends BaseCommand {
   }
 
   private async checkAnyKrowdConnectivity(): Promise<HealthStatus> {
-    // TODO: Implement actual connectivity check
-    return {
-      service: 'anyKrowd Connectivity',
-      status: 'unknown',
-      message: 'Connectivity check not implemented',
-      lastChecked: new Date()
-    };
+    const baseUrl = process.env['ANYKROWD_BASE_URL'];
+    const tenant = process.env['ANYKROWD_TENANT'];
+    
+    if (!baseUrl || !tenant) {
+      const missing = [];
+      if (!baseUrl) missing.push('ANYKROWD_BASE_URL');
+      if (!tenant) missing.push('ANYKROWD_TENANT');
+      
+      return {
+        service: 'anyKrowd Configuration',
+        status: 'unhealthy',
+        message: `Missing: ${missing.join(', ')}`,
+        lastChecked: new Date()
+      };
+    }
+
+    // Validate URL format
+    try {
+      new URL(baseUrl);
+      return {
+        service: 'anyKrowd Configuration',
+        status: 'healthy',
+        message: `Configured for ${tenant} at ${baseUrl}`,
+        lastChecked: new Date()
+      };
+    } catch (error) {
+      return {
+        service: 'anyKrowd Configuration',
+        status: 'unhealthy',
+        message: `Invalid URL format: ${baseUrl}`,
+        lastChecked: new Date()
+      };
+    }
   }
 
   private async checkTestDirectories(): Promise<HealthStatus> {
@@ -446,6 +484,90 @@ export class StatusCommand extends BaseCommand {
         lastChecked: new Date()
       };
     }
+  }
+
+  private async checkCLIInstallation(): Promise<HealthStatus> {
+    return new Promise((resolve) => {
+      const child = spawn('testx', ['--version'], { 
+        stdio: 'pipe',
+        shell: true 
+      });
+
+      let output = '';
+      child.stdout?.on('data', (data) => {
+        output += data.toString();
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          const version = output.trim();
+          resolve({
+            service: 'CLI Installation',
+            status: 'healthy',
+            message: `TestX CLI v${version} globally installed`,
+            lastChecked: new Date()
+          });
+        } else {
+          resolve({
+            service: 'CLI Installation',
+            status: 'degraded',
+            message: 'CLI not globally installed - run npm link',
+            lastChecked: new Date()
+          });
+        }
+      });
+
+      child.on('error', () => {
+        resolve({
+          service: 'CLI Installation',
+          status: 'degraded',
+          message: 'CLI not globally installed - run npm link',
+          lastChecked: new Date()
+        });
+      });
+    });
+  }
+
+  private async checkTypeScriptCompilation(): Promise<HealthStatus> {
+    return new Promise((resolve) => {
+      const child = spawn('npx', ['tsc', '--noEmit'], { 
+        stdio: 'pipe',
+        shell: true 
+      });
+
+      let errorOutput = '';
+      child.stderr?.on('data', (data) => {
+        errorOutput += data.toString();
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({
+            service: 'TypeScript Compilation',
+            status: 'healthy',
+            message: 'No compilation errors',
+            lastChecked: new Date()
+          });
+        } else {
+          const errorCount = (errorOutput.match(/error TS/g) || []).length;
+          resolve({
+            service: 'TypeScript Compilation',
+            status: 'unhealthy',
+            message: `${errorCount} compilation error(s) found`,
+            lastChecked: new Date()
+          });
+        }
+      });
+
+      child.on('error', () => {
+        resolve({
+          service: 'TypeScript Compilation',
+          status: 'unknown',
+          message: 'Failed to run TypeScript compiler',
+          lastChecked: new Date()
+        });
+      });
+    });
   }
 
   private displayResults(results: HealthStatus[], jsonOutput: boolean = false): void {
