@@ -249,6 +249,83 @@ GITHUB_TOKEN=your-github-personal-access-token
 4. Test changes locally before committing
 5. Use conventional commit messages
 
+## 📝 Release Management
+
+### Automated Release Process
+Every story/epic completion follows a standardized release process:
+
+#### After Each Story Completion
+1. **Create Release Note** (`release-notes/v{version}-{story-name}.md`)
+   - Follow template format from existing release notes
+   - Document all acceptance criteria verification
+   - Include technical specifications and file changes
+   - Provide next development target and continuation prompt
+
+2. **Update GitHub Repository**
+   - Push feature branch: `git push origin feature/{issue-number}-{description}`
+   - Update GitHub issue with completion status and release note link
+   - Add appropriate labels: `completed`, `story`, `epic-{number}`
+   - Close issue when all acceptance criteria verified
+
+3. **Sync Documentation**
+   - Commit and push all documentation changes
+   - Update README.md for new features or setup steps
+   - Verify all documentation links are working
+   - Update architectural diagrams if structure changed
+
+4. **Validate Integration**
+   - Run full test suite: `npm run test`
+   - Verify TypeScript compilation: `npm run type-check`
+   - Check linting: `npm run lint`
+   - Ensure no breaking changes introduced
+
+#### Release Note Template
+```markdown
+# TestX MVP v{version} - {Story/Epic Name} Complete
+**Release Date:** {YYYY-MM-DD}
+**BMAD Agent:** {Agent Name and Role}
+**Status:** ✅ {STORY/EPIC} COMPLETE - {Brief Status}
+
+## 🎯 Release Summary
+{Comprehensive summary of what was accomplished}
+
+## ✅ Major Accomplishments
+{Detailed list of all major features/changes}
+
+## 📊 Technical Specifications
+{Technical details, file structure, environment variables}
+
+## 🚨 Critical Requirements for Next Steps
+{What user needs to do, setup requirements}
+
+## 🎯 Next Development Target
+{Next story/epic with issue link and details}
+
+## 🚀 OPTIMAL CONTINUATION PROMPT
+{Exact prompt for next development phase}
+
+## 📋 Validation Checklist
+{All acceptance criteria with checkboxes}
+
+## 🔗 Important Links
+{Repository, issues, documentation links}
+```
+
+#### GitHub Issue Management
+- **Labels:** `story`, `epic`, `completed`, `in-progress`, `blocked`, `needs-review`
+- **Priority Labels:** `priority-p0` (Critical), `priority-p1` (High), `priority-p2` (Medium)
+- **Updates Required:** Link to release note, status labels, completion timestamp, feature branch link
+
+#### Quality Gates
+- [ ] All tests passing locally
+- [ ] TypeScript compilation successful
+- [ ] No linting errors
+- [ ] All documentation updated
+- [ ] Feature branch pushed to GitHub
+- [ ] GitHub issue updated
+- [ ] Release note created and complete
+- [ ] Next development target identified
+
 ## 📚 Documentation
 
 ### Core Documentation
