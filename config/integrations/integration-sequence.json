@@ -1,0 +1,196 @@
+{
+  "version": "1.0.0",
+  "description": "TestX Integration Sequence Configuration - Defines service dependencies and initialization order",
+  "sequence": {
+    "order": ["slack", "notion", "github", "anykrowd"],
+    "parallelGroups": [],
+    "validationEnabled": true
+  },
+  "services": {
+    "slack": {
+      "type": "slack",
+      "name": "Slack Integration",
+      "description": "Foundation service for notifications and communication",
+      "dependencies": [],
+      "healthCheck": {
+        "url": "https://slack.com/api/api.test",
+        "method": "GET",
+        "timeout": 30000,
+        "expectedStatus": [200],
+        "retryAttempts": 3,
+        "retryDelay": 1000
+      },
+      "fallbackStrategy": {
+        "enabled": true,
+        "mode": "fallback",
+        "cacheEnabled": true,
+        "cacheRetentionHours": 24,
+        "offlineCapabilities": ["mock_data", "local_logging"],
+        "fallbackDataSource": "local://slack_fallback"
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "baseDelay": 1000,
+        "maxDelay": 30000,
+        "exponentialBackoff": true,
+        "jitterEnabled": true,
+        "retryableErrors": ["timeout", "network", "rate limit", "429", "500", "502", "503", "504"]
+      },
+      "enabled": true,
+      "priority": 1
+    },
+    "notion": {
+      "type": "notion",
+      "name": "Notion Integration",
+      "description": "Documentation and data storage service",
+      "dependencies": [
+        {
+          "service": "slack",
+          "required": false,
+          "fallbackAvailable": true,
+          "description": "Slack for notifications when Notion operations complete"
+        }
+      ],
+      "healthCheck": {
+        "url": "https://api.notion.com/v1/users/me",
+        "method": "GET",
+        "timeout": 30000,
+        "expectedStatus": [200],
+        "headers": {
+          "Notion-Version": "2022-06-28"
+        },
+        "retryAttempts": 3,
+        "retryDelay": 1000
+      },
+      "fallbackStrategy": {
+        "enabled": true,
+        "mode": "fallback",
+        "cacheEnabled": true,
+        "cacheRetentionHours": 24,
+        "offlineCapabilities": ["mock_data", "local_storage", "cached_data"],
+        "fallbackDataSource": "local://notion_fallback"
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "baseDelay": 1000,
+        "maxDelay": 30000,
+        "exponentialBackoff": true,
+        "jitterEnabled": true,
+        "retryableErrors": ["timeout", "network", "rate limit", "429", "500", "502", "503", "504"]
+      },
+      "enabled": true,
+      "priority": 2
+    },
+    "github": {
+      "type": "github",
+      "name": "GitHub Integration",
+      "description": "Code repository and deployment management",
+      "dependencies": [
+        {
+          "service": "slack",
+          "required": false,
+          "fallbackAvailable": true,
+          "description": "Slack for deployment notifications"
+        },
+        {
+          "service": "notion",
+          "required": false,
+          "fallbackAvailable": true,
+          "description": "Notion for deployment documentation"
+        }
+      ],
+      "healthCheck": {
+        "url": "https://api.github.com/user",
+        "method": "GET",
+        "timeout": 30000,
+        "expectedStatus": [200],
+        "retryAttempts": 3,
+        "retryDelay": 1000
+      },
+      "fallbackStrategy": {
+        "enabled": true,
+        "mode": "fallback",
+        "cacheEnabled": true,
+        "cacheRetentionHours": 24,
+        "offlineCapabilities": ["mock_data", "local_git", "cached_data"],
+        "fallbackDataSource": "local://github_fallback"
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "baseDelay": 1000,
+        "maxDelay": 30000,
+        "exponentialBackoff": true,
+        "jitterEnabled": true,
+        "retryableErrors": ["timeout", "network", "rate limit", "429", "500", "502", "503", "504"]
+      },
+      "enabled": true,
+      "priority": 3
+    },
+    "anykrowd": {
+      "type": "anykrowd",
+      "name": "anyKrowd Environment Integration",
+      "description": "Target testing environment for TestX operations",
+      "dependencies": [
+        {
+          "service": "slack",
+          "required": false,
+          "fallbackAvailable": true,
+          "description": "Slack for test result notifications"
+        },
+        {
+          "service": "notion",
+          "required": false,
+          "fallbackAvailable": true,
+          "description": "Notion for test documentation"
+        },
+        {
+          "service": "github",
+          "required": false,
+          "fallbackAvailable": true,
+          "description": "GitHub for test result commits"
+        }
+      ],
+      "healthCheck": {
+        "url": "https://anykrowd.com/api/health",
+        "method": "GET",
+        "timeout": 30000,
+        "expectedStatus": [200, 204],
+        "retryAttempts": 3,
+        "retryDelay": 1000
+      },
+      "fallbackStrategy": {
+        "enabled": true,
+        "mode": "fallback",
+        "cacheEnabled": true,
+        "cacheRetentionHours": 24,
+        "offlineCapabilities": ["mock_data", "local_testing", "cached_responses"],
+        "fallbackDataSource": "local://anykrowd_fallback"
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "baseDelay": 1000,
+        "maxDelay": 30000,
+        "exponentialBackoff": true,
+        "jitterEnabled": true,
+        "retryableErrors": ["timeout", "network", "rate limit", "429", "500", "502", "503", "504"]
+      },
+      "enabled": true,
+      "priority": 4
+    }
+  },
+  "globalSettings": {
+    "healthCheckInterval": 300000,
+    "sequenceValidationEnabled": true,
+    "fallbackEnabled": true,
+    "mockMode": false,
+    "retryEnabled": true,
+    "metricsEnabled": true,
+    "eventLoggingEnabled": true
+  },
+  "metadata": {
+    "createdAt": "2025-01-27T00:00:00.000Z",
+    "version": "1.0.0",
+    "author": "TestX Integration System",
+    "description": "Defines the proper integration sequence for TestX external services following the dependency order: Slack → Notion → GitHub → anyKrowd"
+  }
+} 
