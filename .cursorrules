@@ -1,0 +1,289 @@
+# TestX MVP - Cursor IDE Rules & Development Guidelines
+# BMAD Method Enhanced - AI/Agent Optimized Development
+
+## 🎯 Project Overview
+- **Project:** TestX MVP - Professional browser testing framework
+- **Architecture:** CLI-first, Module-based (ClientX, StaffX, AdminX)
+- **Framework:** Playwright Test with TypeScript
+- **Method:** BMAD (Business, Method, Architecture, Development)
+- **Repository:** https://github.com/MDgoodlife/testx.git
+
+## 🏗️ Core Building Rules (CRITICAL - READ FIRST)
+
+### 1. Module-First Organization
+- ALL code MUST be organized by module: `clientx`, `staffx`, `adminx`
+- Each module has independent test suites, page objects, and configurations
+- NO cross-module dependencies without explicit documentation
+- File structure: `src/tests/{module}/`, `src/lib/pages/{module}/`
+
+### 2. CLI-First Development
+- ALL testing operations MUST be accessible via CLI
+- Command pattern: `testx [action] [module] [scenario]`
+- Examples: `testx run clientx auth`, `testx create clientx login-flow`
+- Comprehensive error logging in CLI output for AI debugging
+
+### 3. File Naming Conventions (STRICT)
+- Test files: `{scenario}.spec.ts` (e.g., `login.spec.ts`)
+- Page objects: `{page}.page.ts` (e.g., `auth.page.ts`)
+- Setup files: `{module}-{type}.setup.ts` (e.g., `clientx-auth.setup.ts`)
+- CLI commands: `{action}.command.ts` (e.g., `run.command.ts`)
+- Config files: `{module}-{type}.json` (e.g., `clientx-scenarios.json`)
+
+### 4. TypeScript Standards
+- ALWAYS use TypeScript for all code
+- Strict type checking enabled
+- Interface definitions for all data structures
+- No `any` types unless absolutely necessary with justification
+
+### 5. Error Handling & Debugging
+- ALL errors MUST be logged to CLI output with AI-friendly context
+- Critical errors MUST be logged to Notion database
+- Use structured error objects with context
+- Include suggestions for resolution in error messages
+
+## 🔄 Git Workflow & Branch Strategy
+
+### Branch Strategy
+- **main**: Production-ready, stable code (protected)
+- **dev**: Active development branch (default)
+- **feature/{issue-number}-{short-description}**: Feature branches
+- **hotfix/{issue-number}-{short-description}**: Critical fixes
+
+### Commit Standards
+- Use Conventional Commits: `type(scope): description`
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+- Examples:
+  - `feat(cli): add testx run command for clientx module`
+  - `fix(auth): resolve OAuth fallback mechanism`
+  - `docs(readme): update installation instructions`
+
+### Development Workflow
+1. **Create Feature Branch**: `git checkout -b feature/{issue-number}-{description}`
+2. **Implement Changes**: Follow building rules and standards
+3. **Test Locally**: Run relevant tests and ensure they pass
+4. **Commit Changes**: Use conventional commit messages
+5. **Push to Dev**: `git push origin feature/{branch-name}`
+6. **Create PR**: Target `dev` branch, not `main`
+7. **Code Review**: Wait for approval before merging
+8. **Deploy to Dev**: Merge to `dev` branch after approval
+9. **Human Approval**: Only deploy to `main` after human approval
+
+## 📁 Project Structure Rules
+
+### Source Code Organization
+```
+src/
+├── cli/                    # CLI commands and core logic
+│   ├── commands/          # Individual CLI commands
+│   ├── core/             # Core CLI functionality
+│   └── utils/            # CLI utilities
+├── tests/                # Test suites by module
+│   ├── clientx/          # ClientX tests (PRIMARY)
+│   ├── staffx/           # StaffX tests (FUTURE)
+│   └── adminx/           # AdminX tests (FUTURE)
+├── lib/                  # Shared libraries
+│   ├── pages/            # Page objects by module
+│   ├── integrations/     # External service integrations
+│   └── utils/            # Shared utilities
+```
+
+### Configuration Organization
+```
+config/
+├── environments/         # Environment-specific configs
+├── scenarios/           # Test scenario definitions
+└── integrations/        # Integration configurations
+```
+
+## 🧪 Testing Standards
+
+### Playwright Best Practices
+- Use setup projects for authentication
+- Implement page object models
+- Isolate tests with independent auth states
+- Use fixtures for common test data
+- Enable trace collection for debugging
+
+### Test Organization
+- Group tests by user flow, not by page
+- Use descriptive test names
+- Include setup and teardown in test files
+- Maintain test data independence
+
+### Authentication Strategy
+- Separate auth states per module: `clientx-user.json`, `staffx-admin.json`
+- Use setup projects for auth state creation
+- Implement fallback authentication mechanisms
+- Test OAuth and email authentication flows
+
+## 🔌 Integration Standards
+
+### Slack Integration
+- Summary notifications only (not detailed errors)
+- Slash commands: `/testx run clientx auth`, `/testx status`
+- Channel: #testx (C08U6H5DJGM)
+- Error handling with graceful degradation
+
+### Notion Integration
+- Auto-create databases in TestX workspace
+- Comprehensive logging for AI debugging
+- Structured data for analytics
+- Offline mode with sync capabilities
+
+### GitHub Integration
+- Manual deployment controls during MVP
+- Automated testing on PR creation
+- Branch protection on main
+- Issue templates for consistent tracking
+
+## 🤖 AI/Agent Development Rules
+
+### Before Making Changes
+1. Read `docs/project-rules.md` (this file)
+2. Review `docs/folder-structure.md` for organization
+3. Check existing patterns in similar modules/scenarios
+4. Ensure changes follow established conventions
+
+### When Adding New Features
+1. Follow module-first organization
+2. Add CLI command if user-facing
+3. Update relevant documentation
+4. Add error logging and validation
+5. Test integration with existing systems
+
+### When Debugging
+1. Check CLI output for error context
+2. Review Notion database for historical issues
+3. Verify environment detection is working
+4. Confirm authentication states are correct
+
+### Documentation Requirements
+- Every new feature MUST update relevant documentation
+- AI agents MUST read project-rules.md before making changes
+- All changes require clear commit messages
+- Include examples in documentation
+
+## 🚀 Development Commands
+
+### Setup Commands
+```bash
+npm install                    # Install dependencies
+npx playwright install        # Install browsers
+npm run setup                 # Initialize integrations
+```
+
+### Development Commands
+```bash
+npm run dev                   # Start development mode
+npm run test                  # Run all tests
+npm run test:clientx          # Run ClientX tests only
+npm run lint                  # Run linting
+npm run type-check           # TypeScript type checking
+```
+
+### CLI Commands (Once Implemented)
+```bash
+testx run clientx auth        # Run ClientX auth tests
+testx create clientx flow     # Create new test scenario
+testx setup slack            # Setup Slack integration
+testx status --global        # System health check
+```
+
+## 🔒 Security & Credentials
+
+### Environment Variables
+- Use `.env` for local development
+- Never commit credentials to git
+- Use `.env.example` for template
+- Rotate test credentials regularly
+
+### Authentication Testing
+- Use dedicated test accounts for OAuth
+- Implement credential rotation
+- Secure storage of auth states
+- Fallback mechanisms for service outages
+
+## 📋 Definition of Done (DoD)
+
+### For Each Issue/Story
+- [ ] All acceptance criteria met
+- [ ] Unit tests written and passing
+- [ ] Integration tests passing (if applicable)
+- [ ] Code follows naming conventions
+- [ ] Error handling implemented
+- [ ] Documentation updated
+- [ ] CLI integration working (if applicable)
+- [ ] No TypeScript errors
+- [ ] Linting passes
+- [ ] Code review completed
+- [ ] Tested in dev environment
+
+### For Each Epic
+- [ ] All stories completed
+- [ ] Integration testing passed
+- [ ] Documentation complete
+- [ ] Performance benchmarks met
+- [ ] Security review completed
+- [ ] Stakeholder approval received
+
+## 🎨 Code Style Guidelines
+
+### TypeScript/JavaScript
+- Use 2 spaces for indentation
+- Semicolons required
+- Single quotes for strings
+- Trailing commas in objects/arrays
+- Descriptive variable names
+- JSDoc comments for public APIs
+
+### File Organization
+- Import statements at top
+- Group imports: external, internal, relative
+- Export statements at bottom
+- Consistent file structure across modules
+
+## 🔧 Tools & Extensions
+
+### Recommended VS Code Extensions
+- Playwright Test for VS Code
+- TypeScript Importer
+- ESLint
+- Prettier
+- GitLens
+- Thunder Client (for API testing)
+
+### Required Tools
+- Node.js 18+
+- npm or yarn
+- Git
+- Playwright browsers
+
+## 🚨 Critical Reminders
+
+1. **NEVER** commit authentication files (`playwright/.auth/`)
+2. **ALWAYS** test changes locally before pushing
+3. **FOLLOW** the module-first organization strictly
+4. **UPDATE** documentation with every change
+5. **USE** conventional commits for all changes
+6. **TEST** CLI commands after implementation
+7. **VERIFY** integration health after changes
+8. **MAINTAIN** backward compatibility during MVP
+
+## 📞 Support & Escalation
+
+### When Stuck
+1. Check existing documentation
+2. Review similar implementations
+3. Test in isolation
+4. Ask specific questions with context
+5. Provide error logs and steps to reproduce
+
+### Emergency Procedures
+- Critical bugs: Create hotfix branch immediately
+- Service outages: Activate fallback mechanisms
+- Security issues: Stop development, assess impact
+- Data loss: Restore from backups, document incident
+
+---
+
+**Remember: This is an MVP focused on ClientX testing with Playwright best practices. Keep it simple, test thoroughly, and build for future scalability.** 

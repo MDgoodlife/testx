@@ -1,0 +1,123 @@
+name: TestX Playwright Tests
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - clientx
+          - auth
+          - critical
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [clientx-chromium, clientx-firefox]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      
+    - name: Create auth directory
+      run: mkdir -p playwright/.auth
+      
+    - name: Run Playwright tests
+      run: npx playwright test --project=${{ matrix.project }}
+      env:
+        ANYKROWD_BASE_URL: ${{ secrets.ANYKROWD_BASE_URL || 'https://krowd-dev.anykrowd.dev' }}
+        GOOGLE_TEST_EMAIL: ${{ secrets.GOOGLE_TEST_EMAIL }}
+        GOOGLE_TEST_PASSWORD: ${{ secrets.GOOGLE_TEST_PASSWORD }}
+        FACEBOOK_TEST_EMAIL: ${{ secrets.FACEBOOK_TEST_EMAIL }}
+        FACEBOOK_TEST_PASSWORD: ${{ secrets.FACEBOOK_TEST_PASSWORD }}
+        CI: true
+        
+    - name: Upload Playwright Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-${{ matrix.project }}
+        path: |
+          playwright-report/
+          reports/
+          test-results/
+        retention-days: 30
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.project }}
+        path: |
+          reports/json/
+          reports/junit/
+        retention-days: 30
+
+  # Manual deployment job (only runs on manual trigger)
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build project
+      run: npm run build
+      
+    - name: Deploy to production
+      run: echo "Manual deployment step - implement based on deployment target"
+      # Add actual deployment steps here when ready
+
+  # Notification job
+  notify:
+    if: always()
+    needs: [test]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Notify Slack on success
+      if: needs.test.result == 'success'
+      run: |
+        echo "Tests passed - would notify Slack here"
+        # Add Slack notification logic
+        
+    - name: Notify Slack on failure
+      if: needs.test.result == 'failure'
+      run: |
+        echo "Tests failed - would notify Slack here"
+        # Add Slack notification logic 
